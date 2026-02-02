@@ -1,7 +1,7 @@
 [project]
-name = "llm-client"
+name = "yalc"
 version = "0.1.0"
-description = "Add your description here"
+description = "Yet Another LLM Client"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
