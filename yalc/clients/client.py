@@ -5,7 +5,7 @@ import instructor
 from pydantic import BaseModel
 
 from yalc.clients.schemas import ClientCall, ClientMessage
-from yalc.clients.strategy import ClientLogStrategy
+from yalc.clients.strategy import ClientMetadataStrategy
 from yalc.common.pricing import PricingService
 from yalc.common.schemas import LLMModel, LLMRole, ResponseStats
 from yalc.common.utils import to_context_messages
@@ -15,9 +15,9 @@ class Client(ABC):
     def __init__(
         self,
         model: LLMModel,
-        log_strategies: list[ClientLogStrategy] = [],
+        metadata_strategies: list[ClientMetadataStrategy] = [],
     ):
-        self.log_strategies = log_strategies
+        self.metadata_strategies = metadata_strategies
         self.pricing_service = PricingService()
 
         self.instructor_client = instructor.from_provider(
@@ -51,14 +51,14 @@ class Client(ABC):
         """
         Provides a structured response via an LLM call
 
-        Uses provided log strategies to log all the LLM messages
+        Uses provided metadat strategies to handle all the LLM messages
         """
         response, llm_call = await self._structured_response(
             response_type, messages
         )
 
         if context is not None:
-            for strategy in self.log_strategies:
+            for strategy in self.metadata_strategies:
                 strategy.handle(llm_call, context)
             return response
 
