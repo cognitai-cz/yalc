@@ -5,9 +5,12 @@ import asyncio
 import sys
 from dataclasses import dataclass, field
 
+from dotenv import load_dotenv
 from pydantic import BaseModel
 
 from yalc import LLMModel, create_client
+
+load_dotenv()
 
 # ANSI colors
 GREEN = "\033[32m"

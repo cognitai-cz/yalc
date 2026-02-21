@@ -10,6 +10,17 @@ Uses [pydantic](https://docs.pydantic.dev/latest/) models to serialize LLM respo
 
 Full async support.
 
+## Checking models
+
+To verify which models in `LLMModel` are reachable with your current API keys:
+
+```bash
+cp .env.example .env  # fill in your API keys
+uv run python scripts/check_models.py
+```
+
+Each model is called concurrently and results print as they complete.
+
 ## Usage
 
 Every call to the LLM returns some metadata. Metadata contains token usage, costs, model used and context messages. YALC supports 2 modes of operations for handling metadata.
