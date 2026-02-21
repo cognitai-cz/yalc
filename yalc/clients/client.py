@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, overload
 
-import instructor
+from instructor import AsyncInstructor
 from pydantic import BaseModel
 
 from yalc.clients.schemas import ClientCall, ClientMessage
@@ -12,19 +12,20 @@ from yalc.common.utils import to_context_messages
 
 
 class Client(ABC):
+    """Abstract base class for provider-specific LLM clients.
+
+    Use :func:`~yalc.clients.client_factory.create_client` to obtain a concrete instance.
+    """
+
     def __init__(
         self,
         model: LLMModel,
+        instructor_client: AsyncInstructor,
         metadata_strategies: list[ClientMetadataStrategy] = [],
     ):
         self.metadata_strategies = metadata_strategies
         self.pricing_service = PricingService()
-
-        self.instructor_client = instructor.from_provider(
-            model.provider_string,
-            async_client=True,
-            mode=model.mode,
-        )
+        self.instructor_client = instructor_client
         self.model = model
 
     @overload
@@ -40,18 +41,20 @@ class Client(ABC):
         self,
         response_type: type[T],
         messages: list[dict[str, str]],
-    ) -> tuple[T, BaseModel]: ...
+    ) -> tuple[T, ClientCall]: ...
 
     async def structured_response[T: BaseModel](
         self,
         response_type: type[T],
         messages: list[dict[str, str]],
         context: BaseModel | None = None,
-    ) -> T | tuple[T, BaseModel]:
+    ) -> T | tuple[T, ClientCall]:
         """
-        Provides a structured response via an LLM call
+        Sends messages to the LLM and returns a parsed Pydantic response.
 
-        Uses provided metadat strategies to handle all the LLM messages
+        If ``context`` is provided, all registered metadata strategies are invoked and only
+        the parsed response is returned. Otherwise, a ``(parsed, ClientCall)`` tuple is returned
+        so the caller can inspect token usage and costs.
         """
         response, llm_call = await self._structured_response(
             response_type, messages
