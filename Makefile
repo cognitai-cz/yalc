@@ -18,3 +18,6 @@ lint: # Run pre-commit
 
 test: # Run tests
 	uv run pytest $(TA)
+
+check: # Run check models script
+	uv run scripts/check_models.py

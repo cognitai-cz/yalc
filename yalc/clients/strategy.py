@@ -14,5 +14,5 @@ class ClientMetadataStrategy[T: BaseModel](ABC):
     """
 
     @abstractmethod
-    def handle(self, call: ClientCall, context: T | None):
+    async def handle(self, call: ClientCall, context: T | None):
         pass
