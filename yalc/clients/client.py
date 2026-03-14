@@ -1,3 +1,4 @@
+import asyncio
 from abc import ABC, abstractmethod
 from typing import Any, overload
 
@@ -79,8 +80,12 @@ class Client(ABC):
         )
 
         if context is not None:
-            for strategy in self.metadata_strategies:
-                strategy.handle(llm_call, context)
+            await asyncio.gather(
+                *[
+                    strategy.handle(llm_call, context)
+                    for strategy in self.metadata_strategies
+                ]
+            )
             return response
 
         return response, llm_call

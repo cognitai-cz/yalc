@@ -49,7 +49,7 @@ async def test_client_calls_all_strategies_and_returns_parsed_response(
     recorded: list[tuple[str, ClientCall, SimpleContext]] = []
 
     class StrategyA(ClientMetadataStrategy[SimpleContext]):
-        def handle(
+        async def handle(
             self, call: ClientCall, context: SimpleContext | None
         ):
             if context is None:
@@ -57,7 +57,7 @@ async def test_client_calls_all_strategies_and_returns_parsed_response(
             recorded.append(("a", call, context))
 
     class StrategyB(ClientMetadataStrategy[SimpleContext]):
-        def handle(
+        async def handle(
             self, call: ClientCall, context: SimpleContext | None
         ):
             if context is None:

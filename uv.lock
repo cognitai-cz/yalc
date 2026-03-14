@@ -1587,7 +1587,7 @@ wheels = [
 [[package]]
 name = "yalc"
 version = "0.2.2"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "cachetools" },
     { name = "instructor", extra = ["anthropic"] },
